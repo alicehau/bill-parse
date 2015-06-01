@@ -45,8 +45,8 @@ for(i in 1:length(file.names)){
 
   #get the date the bill was introduced if it's in the bill
 
-    if (grepl(".*?Hearing.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", singleString, fixed=FALSE)) {
-    dateIntroduced <- gsub(".*?Hearing.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", "\\1", singleString)
+    if (grepl(".*?Introduced.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", singleString, fixed=FALSE)) {
+    dateIntroduced <- gsub(".*?Introduced.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", "\\1", singleString)
     dateIntroduced <- sub("(\\d{1,2}/\\d{2,4}|\\d{1,2}, \\d{4})(.*)", "\\1", dateIntroduced)
     if (grepl("[0-9]+", dateIntroduced, fixed=FALSE)) {
       date_introduced[numRows] = dateIntroduced
