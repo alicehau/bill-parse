@@ -14,6 +14,7 @@ sapply(filesToModify,FUN=function(eachPath){
 
 file.names <- dir(txtDir, pattern =".*\\.txt", full.names = TRUE)
 eol <- "\n"
+sub <- ""
 for(i in 1:length(file.names)){
 	writeFile <- gsub(".txt", "_MODIFIED.txt", file.names[i], fixed = TRUE)
 	write(eol, file = writeFile, append=TRUE)
@@ -23,6 +24,9 @@ for(i in 1:length(file.names)){
 	line <- readLines(readCon, warn=F, skipNul = T)
 	for ( i in 1:length(line)) {
 		curr <- line[i]
+		if (length(curr) != 0 && grepl("support", curr, useBytes = TRUE, ignore.case = TRUE)) {
+			sub <- "\n"
+		}
 		modified <- gsub("[^[:graph:]///' ]", "", curr)
 	    removed <- gsub("MERGEFIELD  [a-z]*" , " ", modified, fixed = FALSE, ignore.case = FALSE)
 	    mergeformatRemoved <- gsub("MERGEFORMAT" , " ", removed, fixed = TRUE)

@@ -12,13 +12,17 @@ support <- character()
 chair <- character()
 file <- character()
 numRows = 1
-# file.names <- "/Users/alicehau/Gifts_Research/gifts/2015/modified/BILL_ANALYSIS_TBL_1851_MODIFIED.txt"
+# file.names <- "/Users/alicehau/Gifts_Research/gifts/2015/modified/BILL_ANALYSIS_TBL_1524_MODIFIED.txt"
 for(i in 1:length(file.names)){
   # for(i in 100:200){
 
     readFile <- file.names[i]
     cat(file.names[i])
     cat("\n")
+
+    dateIntroduced <- ""
+    dateAmended <- ""
+    dateHearing <- ""
 
     singleString <- readChar(readFile, file.info(readFile)$size)
 
@@ -40,11 +44,12 @@ for(i in 1:length(file.names)){
 
 
   #get the date the bill was introduced if it's in the bill
-  if (grepl(".*?Introduced.*?((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", singleString, fixed=FALSE) ) {
-    dateIntroduced <- sub(".*?Introduced.*?((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", "\\1", singleString, fixed=FALSE)
+  if (grepl(".*?Introduced( Ver)?:?\\s*((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", singleString, fixed=FALSE) ) {
+    dateIntroduced <- sub(".*?Introduced( Ver)?:?\\s*((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", "\\2", singleString, fixed=FALSE)
     dateIntroduced <- sub("(\\d{4})(.*)", "\\1", dateIntroduced) 
-  } else if (grepl(".*?Introduced.*?(\\d{0,2}/\\d{0,2}/\\d{2,4})", singleString)) {
-    dateIntroduced <- sub(".*?Introduced.*?(\\d{0,2}/\\d{0,2}/\\d{2,4}).*$", "\\1", singleString, fixed=FALSE)
+
+  } else if (grepl(".*?Introduced( Ver)?:?\\s*(\\d{0,2}/\\d{0,2}/\\d{2,4})", singleString)) {
+    dateIntroduced <- sub(".*?Introduced( Ver)?:?\\s*(\\d{0,2}/\\d{0,2}/\\d{2,4}).*$", "\\2", singleString, fixed=FALSE)
   }
 
   if (grepl("[0-9]+", dateIntroduced, fixed=FALSE)) {
@@ -208,7 +213,7 @@ for(i in 1:length(file.names)){
   if (grepl("(\n(Support|Registered support):*\n(.*\n)*.*(Opposition|Registered opposition))", singleString, ignore.case = TRUE)) {
     unparsedSupport <- gsub(".*?(\n(Support|Registered support):*\n(.*\n)*.*(Opposition|Registered opposition)).*","\\1",singleString, ignore.case = TRUE)
     unparsedSupport <- gsub("(Support|Opposition|Registered support|Registered opposition)", "", unparsedSupport, ignore.case = TRUE)
-
+    # cat(unparsedSupport)
     splitByLineSupport <- strsplit(unparsedSupport, "\n")
     splitByLineSupport <- unlist(splitByLineSupport)
 
@@ -216,7 +221,7 @@ for(i in 1:length(file.names)){
     numSupporters <- length(splitByLineSupport)
 
     for (j in 1:numSupporters) {
-      if (grepl("^[A-Z][-'A-z]+,?(\\s[A-z][-'A-z]{0,19},?)*.?$", splitByLineSupport[j], fixed=FALSE)) {
+      if (grepl("^[A-Z][-'A-z]+,?((\\s\\(?&?\\s?[A-z][-'A-z]{0,19},?)*.?,?)*$", splitByLineSupport[j], fixed=FALSE)) {
         nextSupport <- splitByLineSupport[j]
         nextSupport <- sub("^[^a-zA-Z]+", "", nextSupport)
         nextSupport <- sub("[ \t]+$", "", nextSupport)
@@ -241,7 +246,7 @@ for(i in 1:length(file.names)){
 
 
   # print(singleString)
-  if (grepl("Opposition:*\n*([A-z].*\n)*(Analysis)*", singleString, ignore.case = TRUE)) {
+  if (grepl("Opposition:*\n*([A-z].*\n)*(Analysis|-- END --)*", singleString, ignore.case = TRUE)) {
     unparsedOpposition <- sub(".*?(\nOpposition:*\n*([A-z].*\n)*(Analysis)*).*","\\1",singleString, ignore.case =TRUE)
     unparsedOpposition <- gsub("(Support|Opposition|Registered support|Registered opposition|analysis)", "", unparsedOpposition, ignore.case = TRUE)
     splitByLineOpposition <- strsplit(unparsedOpposition, "\n")
@@ -251,27 +256,29 @@ for(i in 1:length(file.names)){
 
 
 
-  numOpposers <- length(splitByLineOpposition)
-    # for (i in 1:numOpposers) {
-    #   if (grepl("[A-z]+", splitByLineOpposition[i], fixed=FALSE)) {
+  # numOpposers <- length(splitByLineOpposition)
+  #   for (i in 1:numOpposers) {
+  #     if (grepl("^[A-Z][-'A-z]+,?(\\s[A-z][-'A-z]{0,19},?)*.?", splitByLineOpposition[i], fixed=FALSE)) {
 
-    #     nextOpposition <- splitByLineOpposition[i]
-    #     # opposition[length(billOpposition)+1] <-  nextOpposition
-    #     # support[length(billSupport)+1] <- ""
-    #         opposition[numRows] <-  nextOpposition
-    #     bill_id[numRows] = billID
-    #       date_introduced[numRows] = ""
-    #           date_amended[numRows] = ""
-    #   date_hearing[numRows] = ""
-    #       chair[numRows] = ""
-    #       author[numRows] = ""
-    #       support[numRows]= ""
-    #       consultant[numRows] = ""
-    #         file[numRows] = file.names[i]
-    #       numRows = numRows + 1
-    #   }  
-    # }
+  #       nextOpposition <- splitByLineOpposition[i]
+  #       # opposition[length(billOpposition)+1] <-  nextOpposition
+  #       # support[length(billSupport)+1] <- ""
+  #           opposition[numRows] <-  nextOpposition
+  #       bill_id[numRows] = billID
+  #         date_introduced[numRows] = ""
+  #             date_amended[numRows] = ""
+  #     date_hearing[numRows] = ""
+  #         chair[numRows] = ""
+  #         author[numRows] = ""
+  #         support[numRows]= ""
+  #         consultant[numRows] = ""
+  #           file[numRows] = file.names[i]
+  #         numRows = numRows + 1
+  #     }  
+  #   }
     # print(opposition)
+
+
 
   }
 }
