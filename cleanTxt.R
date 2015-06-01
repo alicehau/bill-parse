@@ -12,7 +12,7 @@ support <- character()
 chair <- character()
 file <- character()
 numRows = 1
-# file.names <- "/Users/alicehau/Gifts_Research/gifts/2015/modified/BILL_ANALYSIS_TBL_1524_MODIFIED.txt"
+# file.names <- "/Users/alicehau/Gifts_Research/gifts/2015/modified/BILL_ANALYSIS_TBL_1030_MODIFIED.txt"
 for(i in 1:length(file.names)){
   # for(i in 100:200){
 
@@ -44,28 +44,27 @@ for(i in 1:length(file.names)){
 
 
   #get the date the bill was introduced if it's in the bill
-  if (grepl(".*?Introduced( Ver)?:?\\s*((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", singleString, fixed=FALSE) ) {
-    dateIntroduced <- sub(".*?Introduced( Ver)?:?\\s*((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", "\\2", singleString, fixed=FALSE)
-    dateIntroduced <- sub("(\\d{4})(.*)", "\\1", dateIntroduced) 
 
-  } else if (grepl(".*?Introduced( Ver)?:?\\s*(\\d{0,2}/\\d{0,2}/\\d{2,4})", singleString)) {
-    dateIntroduced <- sub(".*?Introduced( Ver)?:?\\s*(\\d{0,2}/\\d{0,2}/\\d{2,4}).*$", "\\2", singleString, fixed=FALSE)
+    if (grepl(".*?Hearing.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", singleString, fixed=FALSE)) {
+    dateIntroduced <- gsub(".*?Hearing.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", "\\1", singleString)
+    dateIntroduced <- sub("(\\d{1,2}/\\d{2,4}|\\d{1,2}, \\d{4})(.*)", "\\1", dateIntroduced)
+    if (grepl("[0-9]+", dateIntroduced, fixed=FALSE)) {
+      date_introduced[numRows] = dateIntroduced
+      bill_id[numRows] = billID
+      chair[numRows] = "";
+      author[numRows] = "";
+      support[numRows] = "";
+      opposition[numRows]= ""
+      date_amended[numRows] = "";
+      date_hearing[numRows] = ""
+      consultant[numRows] = ""
+
+      file[numRows] = file.names[i]
+      numRows = numRows + 1
+    }
   }
 
-  if (grepl("[0-9]+", dateIntroduced, fixed=FALSE)) {
-    date_introduced[numRows] = dateIntroduced
-    bill_id[numRows] = billID
-    chair[numRows] = "";
-    author[numRows] = "";
-    support[numRows] = "";
-    opposition[numRows]= ""
-    date_amended[numRows] = "";
-    date_hearing[numRows] = ""
-    consultant[numRows] = ""
 
-    file[numRows] = file.names[i]
-    numRows = numRows + 1
-  }
 
   if (grepl(".*?Hearing.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", singleString, fixed=FALSE)) {
     dateHearing <- gsub(".*?Hearing.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", "\\1", singleString)
@@ -86,26 +85,24 @@ for(i in 1:length(file.names)){
     }
   }
 
+  if (grepl(".*?Amended.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", singleString, fixed=FALSE)) {
+    dateAmended <- gsub(".*?Amended.*?(((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})|(\\d{0,2}/\\d{0,2}/\\d{2,4}))", "\\1", singleString)
+    dateAmended <- sub("(\\d{1,2}/\\d{2,4}|\\d{1,2}, \\d{4})(.*)", "\\1", dateAmended)
+    if (grepl("[0-9]+", dateHearing, fixed=FALSE)) {
+      date_amended[numRows] = dateAmended
+      bill_id[numRows] = billID
+      chair[numRows] = "";
+      author[numRows] = "";
+      support[numRows] = "";
+      opposition[numRows]= ""
+      date_hearing[numRows] = "";
+      date_introduced[numRows] = ""
+      consultant[numRows] = ""
 
-  if (grepl(".*?Amended.*?((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", singleString, fixed=FALSE) ) {
-      dateAmended <- sub(".*?Amended.*?((January|February|March|April|June|July|August|September|October|November|December) \\d{0,2}, \\d{4})", "\\1", singleString, fixed=FALSE)
-      dateAmended <- sub("(\\d{4})(.*)", "\\1", dateAmended)
-    } else if (grepl(".*?Amended.*?(\\d{0,2}/\\d{0,2}/\\d{2,4})", singleString, fixed= FALSE)) {
-      dateAmended <- sub(".*?Amended.*?(\\d{0,2}/\\d{0,2}/\\d{2,4})", "\\1", singleString, fixed=FALSE)
-      dateAmended <- sub(" .*", "", dateAmended)
-    } else {
-      dateAmended = ""
+      file[numRows] = file.names[i]
+      numRows = numRows + 1
     }
-    date_amended[numRows] = dateAmended
-    bill_id[numRows] = billID
-    chair[numRows] = "";
-    author[numRows] = "";
-    support[numRows] = "";
-    opposition[numRows]= ""
-    date_hearing[numRows] = "";
-    date_introduced[numRows] = ""
-    consultant[numRows] = ""
-    file[numRows] = file.names[i]
+  }
 
 
 
