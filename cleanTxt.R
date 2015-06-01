@@ -12,9 +12,9 @@ support <- character()
 chair <- character()
 file <- character()
 numRows = 1
+# file.names <- "/Users/alicehau/Gifts_Research/gifts/2015/modified/BILL_ANALYSIS_TBL_1851_MODIFIED.txt"
 for(i in 1:length(file.names)){
-  # file.names <- "/Users/alicehau/Gifts_Research/gifts/2015/modified/BILL_ANALYSIS_TBL_4_MODIFIED.txt"
-  # for(i in 1:1){
+  # for(i in 100:200){
 
     readFile <- file.names[i]
     cat(file.names[i])
@@ -88,9 +88,9 @@ for(i in 1:length(file.names)){
     } else if (grepl(".*?Amended.*?(\\d{0,2}/\\d{0,2}/\\d{2,4})", singleString, fixed= FALSE)) {
       dateAmended <- sub(".*?Amended.*?(\\d{0,2}/\\d{0,2}/\\d{2,4})", "\\1", singleString, fixed=FALSE)
       dateAmended <- sub(" .*", "", dateAmended)
+    } else {
+      dateAmended = ""
     }
-
-
     date_amended[numRows] = dateAmended
     bill_id[numRows] = billID
     chair[numRows] = "";
@@ -101,6 +101,8 @@ for(i in 1:length(file.names)){
     date_introduced[numRows] = ""
     consultant[numRows] = ""
     file[numRows] = file.names[i]
+
+
 
 
   #get the name of the chair
@@ -203,8 +205,8 @@ for(i in 1:length(file.names)){
 
 
 
-  if (grepl("((Support|Registered support):*\n(.*\n)*.*(Opposition|Registered opposition))", singleString, ignore.case = TRUE)) {
-    unparsedSupport <- gsub(".*?((Support|Registered support):*\n(.*\n)*.*(Opposition|Registered opposition)).*","\\1",singleString, ignore.case = TRUE)
+  if (grepl("(\n(Support|Registered support):*\n(.*\n)*.*(Opposition|Registered opposition))", singleString, ignore.case = TRUE)) {
+    unparsedSupport <- gsub(".*?(\n(Support|Registered support):*\n(.*\n)*.*(Opposition|Registered opposition)).*","\\1",singleString, ignore.case = TRUE)
     unparsedSupport <- gsub("(Support|Opposition|Registered support|Registered opposition)", "", unparsedSupport, ignore.case = TRUE)
 
     splitByLineSupport <- strsplit(unparsedSupport, "\n")
@@ -213,25 +215,25 @@ for(i in 1:length(file.names)){
 
     numSupporters <- length(splitByLineSupport)
 
-    # for (i in 1:numSupporters) {
-    #   if (grepl("[A-z]+", splitByLineSupport[i], fixed=FALSE)) {
-    #     nextSupport <- splitByLineSupport[i]
-    #     nextSupport <- sub("^[^a-zA-Z]+", "", nextSupport)
-    #     nextSupport <- sub("[ \t]+$", "", nextSupport)
-    #     support[numRows] <- nextSupport
-    #     bill_id[numRows] = billID
-    #     date_introduced[numRows] = "";
-    #     chair[numRows] = ""
-    #     author[numRows] = "";
-    #         date_amended[numRows] = "";
-    # date_hearing[numRows] = ""
-    #     opposition[numRows]= ""
-    #         consultant[numRows] = "";
-    #       file[numRows] = file.names[i]
-    #     numRows = numRows + 1
-    #   }
+    for (j in 1:numSupporters) {
+      if (grepl("^[A-Z][-'A-z]+,?(\\s[A-z][-'A-z]{0,19},?)*.?$", splitByLineSupport[j], fixed=FALSE)) {
+        nextSupport <- splitByLineSupport[j]
+        nextSupport <- sub("^[^a-zA-Z]+", "", nextSupport)
+        nextSupport <- sub("[ \t]+$", "", nextSupport)
+        support[numRows] <- nextSupport
+        bill_id[numRows] = billID
+        date_introduced[numRows] = "";
+        chair[numRows] = ""
+        author[numRows] = "";
+            date_amended[numRows] = "";
+    date_hearing[numRows] = ""
+        opposition[numRows]= ""
+            consultant[numRows] = "";
+          file[numRows] = file.names[i]
+        numRows = numRows + 1
+      }
 
-    # }
+    }
 
   }
 
@@ -275,5 +277,5 @@ for(i in 1:length(file.names)){
 }
 
 frame <- data.frame(file, bill_id, date_introduced, date_hearing, date_amended, chair, author, consultant, support, opposition, stringsAsFactors=FALSE)
-write.csv(frame, "/Users/alicehau/Gifts_Research/convert.csv")
+write.csv(frame, "/Users/alicehau/bill-parse/support.csv")
 
